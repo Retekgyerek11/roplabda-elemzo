@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Röplabda Meccs Elemző</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- ══════════ LOGIN SCREEN ══════════ -->
+<div id="login-screen" class="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <span class="logo">🏐 RÖPLABDA</span>
+      <span class="logo-sub">MECCS ELEMZŐ</span>
+    </div>
+    <form id="login-form" onsubmit="handleLogin(event)">
+      <input type="email" id="login-email" class="login-input" placeholder="Email cím" autocomplete="username" required>
+      <input type="password" id="login-password" class="login-input" placeholder="Jelszó" autocomplete="current-password" required>
+      <button type="submit" class="login-btn" id="login-btn">Bejelentkezés</button>
+      <div id="login-error" class="login-error" style="display:none"></div>
+    </form>
+  </div>
+  <div class="login-credit">Készítette: Leiner Péter</div>
+</div>
+
+<!-- ══════════ APP (hidden until logged in) ══════════ -->
+<div id="public-report" style="display:none"></div>
+
+<div id="app-container" style="display:none">
+<nav>
+  <div class="nav-row nav-row-top">
+    <div class="logo-block">
+      <span class="logo">🏐 RÖPLABDA</span>
+      <span class="fb-dot" id="fb-dot" title="Kapcsolat állapota"></span>
+      <span class="logo-sub">MECCS ELEMZŐ</span>
+    </div>
+    <div class="user-picker">
+      <span class="user-email" id="user-email-label"></span>
+      <button class="logout-btn" onclick="handleLogout()">Kijelentkezés</button>
+    </div>
+  </div>
+  <div class="nav-row nav-row-main">
+    <div class="tabs" id="nav-tabs">
+      <button class="tab admin-only" style="display:none" onclick="showTab('t1',this)">FELTÖLTÉS</button>
+      <button class="tab" onclick="showTab('t2',this)">ÁTTEKINTÉS</button>
+      <button class="tab" onclick="showTab('t3',this)">ÜTÉSI TAKTIKA</button>
+      <button class="tab" onclick="showTab('t4',this)">FELADÓ RIPORT</button>
+      <button class="tab" onclick="showTab('t5',this)">NYITÁSI TAKTIKA</button>
+      <button class="tab" onclick="showTab('t6',this)">MECCS LAP</button>
+      <button class="tab" onclick="showTab('t7',this)">LIGA BENCHMARK</button>
+    </div>
+    <div class="nav-filters">
+      <div class="team-picker">
+        <span class="team-picker-label">CSAPAT</span>
+        <select id="team-select"></select>
+      </div>
+      <div class="match-picker" id="match-picker-wrap" style="display:none">
+        <span class="team-picker-label">MECCSEK</span>
+        <button class="match-picker-btn" id="match-picker-btn" onclick="toggleMatchPicker(event)">Minden meccs</button>
+        <div class="match-picker-panel" id="match-picker-panel" style="display:none"></div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══════════ TAB 1: UPLOAD (admin only) ══════════ -->
+<div class="section" id="t1">
+  <div class="upload-title">Meccsek betöltése</div>
+  <div id="sync-indicator" style="margin-bottom:16px;font-size:.85rem"></div>
+  <div class="dropzone" id="dropzone">
+    <div class="dropzone-title">HÚZD IDE A .DVW FÁJLOKAT, VAGY KATTINTS A TALLÓZÁSHOZ</div>
+    <div class="dropzone-sub">Több fájl is kiválasztható egyszerre · a korábban betöltött meccsek megmaradnak</div>
+    <input type="file" id="file-input" accept=".dvw" multiple style="display:none">
+  </div>
+  <div id="upload-progress" style="display:none"></div>
+
+  <div id="storage-warning">
+    <div class="ai">⚠️</div>
+    <div>
+      <div class="at" style="color:var(--amber)">A böngésző tárhelye megtelt</div>
+      <div class="ad">Néhány meccs adatai nem menthetők el a böngésző helyi tárolójába. Töröld a régebbi meccseket, vagy exportáld a fájljaidat máshova.</div>
+    </div>
+  </div>
+
+
+  <div class="upload-title">Betöltött meccsek (<span id="match-count">0</span>)</div>
+  <div class="list-toolbar">
+    <label class="sel-all"><input type="checkbox" id="select-all-matches" onchange="toggleSelectAllMatches(this.checked)"> Mind kijelöl</label>
+    <div id="bulk-bar" class="bulk-bar" style="display:none">
+      <span id="bulk-count"></span>
+      <button class="bulk-del" onclick="deleteSelectedMatches()">Kijelöltek törlése</button>
+    </div>
+  </div>
+  <div class="match-list" id="match-list"></div>
+
+  <div class="al alt" style="margin-top:24px">
+    <div class="ai">💾</div>
+    <div>
+      <div class="at">Hogyan tárolódnak a meccsek?</div>
+      <div class="ad">Ha a fenti jelző <b>zöld</b> (élő szinkron), a feltöltött meccsek felhőben tárolódnak, és mindenki látja, aki bejelentkezik. Ha a jelző <b>szürke vagy piros</b>, a fájlok csak ennek a böngészőnek a helyi tárolójában maradnak meg.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ TAB 2: OVERVIEW ══════════ -->
+<div class="section active" id="t2"><div id="t2-content"></div></div>
+
+<!-- ══════════ TAB 3: ATTACK ══════════ -->
+<div class="section" id="t3"><div id="t3-content"></div></div>
+
+<!-- ══════════ TAB 4: SETTER ══════════ -->
+<div class="section" id="t4"><div id="t4-content"></div></div>
+
+<!-- ══════════ TAB 5: SERVE ══════════ -->
+<div class="section" id="t5"><div id="t5-content"></div></div>
+
+<!-- ══════════ TAB 6: MATCH-DAY ONE-PAGER ══════════ -->
+<div class="section" id="t6"><div id="t6-content"></div></div>
+
+<!-- ══════════ TAB 7: LIGA BENCHMARK ══════════ -->
+<div class="section" id="t7"><div id="t7-content"></div></div>
+
+<!-- ══════════ FULL MATCH REPORT MODAL ══════════ -->
+<div id="match-report-overlay" class="mr-overlay" style="display:none" onclick="if(event.target===this) closeMatchReport()">
+  <div class="mr-modal">
+    <div class="mr-modal-toolbar no-print">
+      <button class="mr-print-btn" onclick="window.print()">🖨 Nyomtatás</button>
+      <button class="mr-close-btn" onclick="closeMatchReport()">✕ Bezárás</button>
+    </div>
+    <div id="match-report-content"></div>
+  </div>
+</div>
+
+</div>
+
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+<!-- App code -->
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
