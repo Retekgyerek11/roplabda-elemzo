@@ -1,0 +1,26 @@
+{
+  "name": "Röplabda Meccs Elemző",
+  "short_name": "Röplabda",
+  "description": "DataVolley meccselemzés, taktikai riportok és meccslapok edzőknek.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a1424",
+  "theme_color": "#f0a500",
+  "lang": "hu",
+  "icons": [
+    {
+      "src": "favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "favicon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
