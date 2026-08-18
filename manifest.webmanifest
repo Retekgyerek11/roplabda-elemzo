@@ -1,0 +1,26 @@
+{
+  "name": "Röplabda Meccs Elemző",
+  "short_name": "Röplabda",
+  "description": "DataVolley meccselemzés, taktikai riportok és meccslapok edzőknek.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0a1424",
+  "theme_color": "#f0a500",
+  "lang": "hu",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='36' fill='%230a1424'/%3E%3Ccircle cx='96' cy='96' r='54' fill='none' stroke='%23f0a500' stroke-width='9'/%3E%3Cpath d='M96 42c-22 30-22 78 0 108M42 96c30-22 78-22 108 0' fill='none' stroke='%23f0a500' stroke-width='9'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='96' fill='%230a1424'/%3E%3Ccircle cx='256' cy='256' r='144' fill='none' stroke='%23f0a500' stroke-width='24'/%3E%3Cpath d='M256 112c-59 80-59 208 0 288M112 256c80-59 208-59 288 0' fill='none' stroke='%23f0a500' stroke-width='24'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
