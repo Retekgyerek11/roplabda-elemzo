@@ -2282,6 +2282,23 @@ function openAttackZoom(){
   ov.style.display = 'flex';
 }
 
+// The right column only scrolls if it is actually taller than the court, so its
+// cap is measured after layout rather than guessed in CSS.
+function syncAttackSideHeight(){
+  const main = document.querySelector('.atk-main');
+  const court = document.querySelector('.atk-courtwrap');
+  const side = document.querySelector('.atk-side');
+  if (!main || !court || !side) return;
+  if (window.innerWidth <= 980){          // single column below this width
+    side.style.maxHeight = '';
+    return;
+  }
+  const h = court.getBoundingClientRect().height;
+  side.style.maxHeight = h > 260 ? h + 'px' : '';
+}
+window.addEventListener('resize', ()=>{ clearTimeout(window.__atkRz);
+  window.__atkRz = setTimeout(syncAttackSideHeight, 120); });
+
 function attackCoverageNote(viz){
   const bits = [];
   if (viz.blockContact) bits.push(`blokkba ütött / blokkról pattant: <b>${viz.blockContact}</b>`);
@@ -2349,8 +2366,21 @@ function renderAttack(){
   ], activeBits.join(' · '), `clearAttackFilters('${a.jersey}')`);
 
   el.innerHTML = `
+  <div class="atk-selector-label">Melyik ütőt elemezzük?</div>
   <div class="atk-selector">
-    ${attackers.map(x=>`<button class="atk-btn ${x.jersey===a.jersey?'active':''}" onclick="CURRENT_ATK_JERSEY='${x.jersey}';renderAttack()">#${x.jersey} ${escHtml(titleCaseName(x.player.name).split(' ')[0])}</button>`).join('')}
+    ${attackers.map(x=>{
+      const nm = titleCaseName(x.player.name);
+      const kp = x.kp;
+      return `<button class="atk-btn ${x.jersey===a.jersey?'active':''}"
+        onclick="CURRENT_ATK_JERSEY='${x.jersey}';renderAttack()"
+        title="${escAttr(nm + ' · ' + (x.player.role||'') + ' · ' + x.total + ' ütés')}">
+        <span class="atk-btn-jsy">${x.jersey}</span>
+        <span class="atk-btn-txt">
+          <span class="atk-btn-name">${escHtml(nm)}</span>
+          <span class="atk-btn-sub">${escHtml(x.player.role||'')} · ${x.total} ütés · ${kp}% kill</span>
+        </span>
+      </button>`;
+    }).join('')}
   </div>
 
   <div class="atk-head">
@@ -2385,6 +2415,12 @@ function renderAttack(){
     </div>
   </div>
   ${blockStatsSectionHtml(st)}`;
+
+  // Court height is only known once the SVG has laid out. rAF is missing in
+  // some embedded/older webviews, so fall back to a timeout rather than
+  // throwing and killing the rest of the render.
+  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(syncAttackSideHeight);
+  else setTimeout(syncAttackSideHeight, 30);
 }
 function blockStatsSectionHtml(stats){
   const entries = Object.entries(stats.block).filter(([j,b])=>b.total>=5).map(([j,b])=>{
@@ -3816,7 +3852,9 @@ function mdBoardPoint(ev, el){
 let MD_RAF = null;
 function mdDragRedraw(){
   if (MD_RAF) return;
-  MD_RAF = requestAnimationFrame(()=>{ MD_RAF = null; mdRedrawBoards(); });
+  const raf = (typeof requestAnimationFrame === 'function')
+    ? requestAnimationFrame : (cb)=>setTimeout(cb, 16);
+  MD_RAF = raf(()=>{ MD_RAF = null; mdRedrawBoards(); });
 }
 function mdRedrawBoards(){
   mdCourts().forEach((c,i)=>{

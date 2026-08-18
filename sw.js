@@ -14,7 +14,7 @@
 // ettől a régi gyorsítótár törlődik és mindenki a friss fájlokat kapja.
 // ═══════════════════════════════════════════════════════════════════════
 
-const CACHE_VERSION = 'rv-v2';
+const CACHE_VERSION = 'rv-v3';
 const APP_CACHE  = CACHE_VERSION + '-app';
 const DATA_CACHE = CACHE_VERSION + '-data';
 
@@ -25,6 +25,7 @@ const APP_SHELL = [
   './engine.js',
   './app.js',
   './manifest.webmanifest',
+  './favicon.svg',
 ];
 
 self.addEventListener('install', event => {
